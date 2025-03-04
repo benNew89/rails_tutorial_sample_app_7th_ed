@@ -144,7 +144,7 @@ group :development, :test do
   gem 'byebug', platform: :mri
   gem 'json-schema'
   gem 'rb-inotify', '= 0.10.1'
-  gem 'guard', require: false
+  gem 'guard', '2.18.0', require: false
   gem 'guard-rspec', require: false
   gem 'guard-rake', require: false
   gem 'guard-livereload', require: false
@@ -181,7 +181,7 @@ group :test do
   gem "rails-controller-testing", "1.0.5"
   gem "minitest",                 "5.15.0"
   gem "minitest-reporters",       "1.5.0"
-  gem "guard",                    "2.18.0"
+  gem 'guard',                    '2.18.0'
   gem "guard-minitest",           "2.4.6"
 end
 
