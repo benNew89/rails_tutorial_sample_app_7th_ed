@@ -1,31 +1,173 @@
-# Use the latest 2.1 version of CircleCI pipeline process engine.
-# See: https://circleci.com/docs/configuration-reference
 version: 2.1
 
-# Define a job to be invoked later in a workflow.
-# See: https://circleci.com/docs/jobs-steps/#jobs-overview & https://circleci.com/docs/configuration-reference/#jobs
-jobs:
-  say-hello:
-    # Specify the execution environment. You can specify an image from Docker Hub or use one of our convenience images from CircleCI's Developer Hub.
-    # See: https://circleci.com/docs/executor-intro/ & https://circleci.com/docs/configuration-reference/#executor-job
-    docker:
-      # Specify the version you desire here
-      # See: https://circleci.com/developer/images/image/cimg/base
-      - image: cimg/base:current
-
-    # Add steps to the job
-    # See: https://circleci.com/docs/jobs-steps/#steps-overview & https://circleci.com/docs/configuration-reference/#steps
+commands:
+  wait_for_postgres:
+    description: "Wait for Postgres to be ready"
     steps:
-      # Checkout the code as the first step.
-      - checkout
       - run:
-          name: "Say hello"
-          command: "echo Hello, World!"
+          name: Wait for Postgres
+          command: dockerize -wait tcp://localhost:5432 -timeout 10m
 
-# Orchestrate jobs using workflows
-# See: https://circleci.com/docs/workflows/ & https://circleci.com/docs/configuration-reference/#workflows
+  setup_artifacts_and_tests:
+    steps:
+      - run: mkdir -p $CIRCLE_ARTIFACTS $CIRCLE_TEST_REPORTS
+
+  prepare_dependencies:
+    description: "Install and prepare dependencies"
+    steps:
+      - run: echo -e "export RAILS_ENV=test\nexport RACK_ENV=test" >> $BASH_ENV
+      - run:
+          name: Configure Bundler
+          command: |
+            echo 'export BUNDLER_VERSION=$(cat Gemfile.lock | tail -1 | tr -d " ")' >> $BASH_ENV
+            source $BASH_ENV
+            gem install bundler
+      - restore_cache:
+          keys:
+            - lifetalesV2-server-bundle-v2-new-{{ checksum "Gemfile.lock" }}
+            - lifetalesV2-server-bundle-v2-new-
+      - run: curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+      - run: 
+          name: install gem dependencies
+          command: sudo apt update && sudo apt install -y poppler-utils imagemagick libmagickcore-dev libmagickwand-dev pkg-config libgeos-dev libgeos++-dev libproj-dev || true
+      - run:
+          name: bundle lifetalesV2-server
+          command: 'bundle check --path=vendor/bundle || bundle install --path=vendor/bundle --jobs=4 --retry=3'
+
+  # caching:
+  #   description: "Caching for components"
+  #   steps:
+  #     - save_cache:
+  #         key: lifetalesV2-server-bundle-v2-new-{{ checksum "Gemfile.lock" }}
+  #         paths:
+  #           - vendor/bundle
+  #     - restore_cache:
+  #         keys:
+  #           - lifetalesV2-components-tracker-bundle-new-{{ checksum "components/tracker/Gemfile.lock" }}
+  #           - lifetalesV2-components-tracker-bundle-new-
+  #     - run:
+  #         name: bundle components/tracker
+  #         command: 'cd components/tracker; bundle check --path=vendor/bundle || bundle install --path=vendor/bundle --jobs=4 --retry=3'
+  #     - save_cache:
+  #         key: lifetalesV2-components-tracker-bundle-new-{{ checksum "components/tracker/Gemfile.lock" }}
+  #         paths:
+  #           - components/tracker/vendor/bundle
+  #     - restore_cache:
+  #         keys:
+  #           - lifetalesV2-components-reminders-bundle-new-{{ checksum "components/reminders/Gemfile.lock" }}
+  #           - lifetalesV2-components-reminders-bundle-new-
+  #     - run:
+  #         name: bundle components/reminders
+  #         command: 'cd components/reminders; bundle check --path=vendor/bundle || bundle install --path=vendor/bundle --jobs=4 --retry=3'
+  #     - save_cache:
+  #         key: lifetalesV2-components-reminders-bundle-new-{{ checksum "components/reminders/Gemfile.lock" }}
+  #         paths:
+  #           - components/reminders/vendor/bundle
+  #     - restore_cache:
+  #         keys:
+  #           - lifetalesV2-components-commerce-bundle-new-{{ checksum "components/commerce/Gemfile.lock" }}
+  #           - lifetalesV2-components-commerce-bundle-new-
+  #     - run:
+  #         name: bundle components/commerce
+  #         command: 'cd components/commerce; bundle check --path=vendor/bundle || bundle install --path=vendor/bundle --jobs=4 --retry=3'
+  #     - save_cache:
+  #         key: lifetalesV2-components-commerce-bundle-new-{{ checksum "components/commerce/Gemfile.lock" }}
+  #         paths:
+  #           - components/commerce/vendor/bundle
+  
+  create_database_config:
+    steps:
+      - run: |-
+          mkdir -p config && echo 'test:
+            database: circle_test
+            adapter: postgresql
+            encoding: unicode
+            pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+            username: ubuntu
+            host: localhost
+          ' > config/database.yml
+
+  # database_config:
+  #   steps:
+  #     - run: |-
+  #          cp config/database.yml components/tracker/test/dummy/config/
+  #     - run: |-
+  #          cp config/database.yml components/reminders/spec/dummy/config/
+  #     - run: |-
+  #          cp config/database.yml components/commerce/spec/dummy/config/
+
+  part1:
+    steps:
+      - run: sudo apt-get --allow-releaseinfo-change update
+  
+  install_postgresql_client:
+    steps:
+      - part1
+      - run: sudo apt install -y libvips postgresql-client poppler-utils || true
+
+  run_migrations:
+    steps:
+      - run:
+          name: Run migrations
+          command: MAILERLITE_API_TOKEN=mailerlite-api-token RAILS_ENV=test bundle exec rails db:drop db:create db:schema:load --trace --verbose
+
+  # run_tests:
+  #   steps:
+  #     - run:
+  #         name: Run rspec tests
+  #         command: MAILERLITE_API_TOKEN=mailerlite-api-token RAILS_ENV=test bundle exec rspec --format progress $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings --timings-type=classname)
+  #     - run:
+  #         name: rspec components/tracker
+  #         command: 'cd components/tracker; bundle exec rspec --format progress spec'
+  #     - run:
+  #         name: rspec components/reminders
+  #         command: 'cd components/reminders; bundle exec rspec --format progress spec'
+  #     - run:
+  #         name: rspec components/commerce
+  #         command: 'cd components/commerce; bundle exec rspec --format progress spec'
+  
+  # store_test_results_and_artifacts:
+  #   steps:
+  #     - store_test_results:
+  #         path: /tmp/circleci-test-results
+  #     - store_artifacts:
+  #         path: /tmp/circleci-artifacts
+  #     - store_artifacts:
+  #         path: /tmp/circleci-test-results
+  
+jobs:
+  build:
+    docker:
+      - image: cimg/ruby:3.0.5-node
+        environment:
+          PGHOST: localhost 
+          PGUSER: root
+          POSTGRES_USER: ubuntu
+          POSTGRES_DB: circle_test
+      - image: cimg/postgres:16.7
+        environment:
+          POSTGRES_USER: ubuntu
+          POSTGRES_DB: circle_test
+    working_directory: ~/LifeTales/lifetalesV2-server
+    shell: /bin/bash --login
+    environment:
+      CIRCLE_ARTIFACTS: /tmp/circleci-artifacts
+      CIRCLE_TEST_REPORTS: /tmp/circleci-test-results
+    steps:
+      - checkout
+      - wait_for_postgres
+      - setup_artifacts_and_tests
+      - prepare_dependencies
+      #- caching
+      - create_database_config
+      #- database_config
+      - install_postgresql_client
+      - run_migrations
+      #- run_tests
+      # Teardown: Save test results and artifacts
+      #- store_test_results_and_artifacts
+
 workflows:
-  say-hello-workflow: # This is the name of the workflow, feel free to change it to better match your workflow.
-    # Inside the workflow, you define the jobs you want to run.
+  build_and_test:
     jobs:
-      - say-hello
+      - build
