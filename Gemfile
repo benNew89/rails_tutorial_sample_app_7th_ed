@@ -172,7 +172,6 @@ group :development do
   # gem 'capistrano3-puma', '=5.0.4', github: "seuros/capistrano-puma"
   gem 'capistrano-rpush'
   gem 'foreman'
-  gem 'web-console'
   gem 'listen'
 end
 
