@@ -22,10 +22,10 @@ commands:
             echo 'export BUNDLER_VERSION=$(cat Gemfile.lock | tail -1 | tr -d " ")' >> $BASH_ENV
             source $BASH_ENV
             gem install bundler
-      - restore_cache:
-          keys:
-            - lifetalesV2-server-bundle-v2-new-{{ checksum "Gemfile.lock" }}
-            - lifetalesV2-server-bundle-v2-new-
+      # - restore_cache:
+      #     keys:
+      #       - lifetalesV2-server-bundle-v2-new-{{ checksum "Gemfile.lock" }}
+      #       - lifetalesV2-server-bundle-v2-new-
       - run: curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
       - run: 
           name: install gem dependencies
