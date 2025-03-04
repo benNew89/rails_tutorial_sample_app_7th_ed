@@ -30,9 +30,9 @@ commands:
       - run: 
           name: install gem dependencies
           command: sudo apt update && sudo apt install -y poppler-utils imagemagick libmagickcore-dev libmagickwand-dev pkg-config libgeos-dev libgeos++-dev libproj-dev || true
-      - run:
-          name: bundle lifetalesV2-server
-          command: 'bundle check --path=vendor/bundle || bundle install --path=vendor/bundle --jobs=4 --retry=3'
+      # - run:
+      #     name: bundle lifetalesV2-server
+      #     command: 'bundle check --path=vendor/bundle || bundle install --path=vendor/bundle --jobs=4 --retry=3'
 
   # caching:
   #   description: "Caching for components"
