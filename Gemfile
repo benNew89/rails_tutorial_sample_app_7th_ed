@@ -234,9 +234,6 @@ gem 'webhookr-mixpanel', git: "https://github.com/LifeTales/webhookr-mixpanel"
 gem 'fastimage'
 gem 'deep_cloneable'
 gem 'webpush', '~> 1.0.0'
-gem 'tracker', path: 'components/tracker'
-gem 'commerce', path: 'components/commerce'
-gem 'reminders', path: 'components/reminders'
 gem 'sidekiq-cron', '~> 1.0.0'
 gem 'whenever', require: false
 # Updated to v1.5 and included set-id-pr
