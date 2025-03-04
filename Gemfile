@@ -57,13 +57,10 @@ gem 'sentry-rails', '= 4.8.1'
 gem 'sentry-sidekiq', '= 4.8.1'
 gem 'm3u8'
 
-gem 'mediainfo', git: 'https://github.com/jshow/mediainfo', :branch => 'protect_from_dashes_in_instance_names'
 gem 'exifr'
-gem 'omniauth-facebook', git: 'https://github.com/mkdynamic/omniauth-facebook'
 gem 'rubyzip', '~> 2.3.0'
 #gem 'redis-activesupport'
 gem 'hiredis'
-gem 'mixpanel-ruby', git: 'https://github.com/LifeTales/mixpanel-ruby', :branch => 'fix_event_import'
 
 gem 'dry-types'
 gem 'dry-struct'
@@ -109,8 +106,7 @@ gem 'groupdate'
 gem 'semantic'
 
 # Active admin gems
-#gem 'activeadmin', git: 'https://github.com/LifeTales/activeadmin', branch: '5669-add-ajaxed-pagination_upgrade_activeadmin'
-gem 'activeadmin', git: 'https://github.com/LifeTales/activeadmin', branch: 'add-ajaxed-pagination_upgrade_activeadmin_upgrade_3.2.4'
+
 gem 'devise'
 gem 'devise-two-factor', '~> 6.0.o'
 gem 'chartkick', '~> 4.1.2'
@@ -153,13 +149,8 @@ group :development, :test do
   gem 'terminal-notifier-guard', require: false
   gem 'rails-erd'
   gem 'rails-controller-testing'
-  gem 'shoulda-matchers', git: 'https://github.com/thoughtbot/shoulda-matchers'
   gem 'timecop'
   gem 'n_plus_one_control'
-  gem 'stripe-ruby-mock', :require => 'stripe_mock', tag: '3.1.0.rc3', git: 'https://github.com/stripe-ruby-mock/stripe-ruby-mock'
-  #gem 'stripe-ruby-mock', '= 3.1.0', :require => 'stripe_mock'
-  #gem 'stripe-ruby-mock', '= 3.1.0', :require => 'stripe_mock', git: 'https://github.com/stripe-ruby-mock/stripe-ruby-mock'
-  gem 'rspec-translation', '~> 1.0', git: 'https://github.com/jshow/rspec-translation', branch: 'fix_to_work_with_ruby_3_0'
   gem 'rspec-json_expectations'
  end
 
@@ -177,7 +168,6 @@ end
 
 gem 'aws-sdk', '~> 3'
 #gem 'uppy-s3_multipart', '~> 0.3'
-#gem 'uppy-s3_multipart', git: 'https://github.com/jshow/uppy-s3_multipart', branch: 'add_uploadid_partno_options_route'
 gem 'uppy-s3_multipart', '>= 1.2.1'
 
 gem 'sidekiq'
@@ -186,7 +176,6 @@ gem 'sidekiq-unique-jobs'
 gem 'tunemygc', group: :production
 gem 'oj'
 gem 'rack-cors', :require => 'rack/cors'
-gem 'sidekiq-scheduler', git: 'https://github.com/sidekiq-scheduler/sidekiq-scheduler', branch: 'v3-stable'
 gem 'faraday'
 gem 'paper_trail'
 gem 'aasm'
@@ -199,7 +188,6 @@ gem 'twilio-ruby'
 gem 'down', '~> 5.0'
 gem 'bcrypt', '~> 3.1.7'
 gem 'kaminari-activerecord'
-gem 'webhookr', git: 'https://github.com/gerrypower/webhookr', branch: 'pass-hook-params-experimental'
 gem 'webhookr-mailchimp'
 gem 'fastimage'
 gem 'deep_cloneable'
@@ -207,7 +195,6 @@ gem 'webpush', '~> 1.0.0'
 gem 'sidekiq-cron', '~> 1.0.0'
 gem 'whenever', require: false
 # Updated to v1.5 and included set-id-pr
-gem 'fast_jsonapi', '~> 1.5', git: 'https://github.com/Netflix/fast_jsonapi'
 
 gem 'rpush' #, '~> 4.1'
 
