@@ -136,7 +136,6 @@ gem 'rack-attack', group: :production
 
 group :development, :test do
   gem 'dotenv-rails', '~> 2.1', '>= 2.1.1'
-  gem 'nokogiri', ">= 1.12.0"
   gem "sqlite3", "1.4.2"
   gem "debug",   "1.5.0", platforms: %i[ mri mingw x64_mingw ]
   gem 'rack-test'
@@ -152,7 +151,7 @@ group :development, :test do
   gem 'terminal-notifier'
   gem 'terminal-notifier-guard', require: false
   gem 'rails-erd'
-  gem 'rails-controller-testing'
+  gem 'rails-controller-testing', "1.0.5"
   gem 'shoulda-matchers', git: 'https://github.com/thoughtbot/shoulda-matchers'
   gem 'timecop'
   gem 'n_plus_one_control'
