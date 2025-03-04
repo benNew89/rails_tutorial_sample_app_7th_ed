@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby "3.1.2"
+ruby "3.0.5"
 
 gem "rails",                      '7.0.4'
 
@@ -131,7 +131,6 @@ gem 'validates_email_format_of'
 gem 'active_model_serializers', '~> 0.10.0'
 gem 'activerecord-import'
 gem 'pg', '1.3.5'
-gem 'puma', '>= 6.4.0'
 gem 'rack-attack', group: :production
 
 group :development, :test do
@@ -178,10 +177,8 @@ group :test do
   gem "capybara",                 "3.37.1"
   gem "selenium-webdriver",       "4.2.0"
   gem "webdrivers",               "5.0.0"
-  gem "rails-controller-testing", "1.0.5"
   gem "minitest",                 "5.15.0"
   gem "minitest-reporters",       "1.5.0"
-  gem 'guard',                    '2.18.0'
   gem "guard-minitest",           "2.4.6"
 end
 
@@ -190,7 +187,6 @@ group :development, :production do
 end
 
 group :production do
-  gem "pg",         "1.3.5"
   gem "aws-sdk-s3", "1.114.0", require: false
 end
 
@@ -216,7 +212,6 @@ gem 'state_machines-audit_trail', '>= 2.0.2'
 gem 'state_machines-activerecord', '>= 0.8.0'
 gem 'twilio-ruby'
 gem 'down', '~> 5.0'
-gem 'bcrypt', '3.1.18'
 gem 'kaminari-activerecord'
 gem 'webhookr', git: 'https://github.com/gerrypower/webhookr', branch: 'pass-hook-params-experimental'
 gem 'webhookr-mailchimp'
